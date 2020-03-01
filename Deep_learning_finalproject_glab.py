@@ -31,7 +31,7 @@ import shutil  # copy images to train, test and valid dirs
 import os  # files and dirs manipulation
 import math  # split calculate
 # path configuration (can be set up in any directory based on user environment,here we have set it up in the google lab
-# Please note we have used google lab environment to leverage cuda performance to train below models
+# Please note we have used google colab environment to leverage cuda performance to train below models
 from google.colab import drive
 # Here you can update your directory on the google drive to where you unzip the files
 drive.mount('/content/drive')

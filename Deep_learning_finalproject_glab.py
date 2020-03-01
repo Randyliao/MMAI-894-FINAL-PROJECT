@@ -449,5 +449,82 @@ bestgeneric = torch.load('thecarconnectionpicturedataset2_modelgeneric_7.pt')
 computeTestSetAccuracy(bestgeneric, loss_criterion)
 
 
+# updated the Relu activation function to retrain the generic model to compare the performance
+class generic_RRELU(nn.Module):
+    def __init__(self):
+        super(generic_RRELU, self).__init__()
 
+        self.cnn_layers = Sequential(
+            nn.Conv2d(3, 64, kernel_size=5, stride=1, padding=2),
+            nn.RReLU(),
+            MaxPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(64, 128, kernel_size=5, stride=1, padding=2),
+            nn.RReLU(),
+            MaxPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(128, 256, kernel_size=5, stride=1, padding=2),
+            nn.RReLU(),
+            MaxPool2d(kernel_size=2, stride=2))
+
+        self.drop_out = nn.Dropout()
+        self.linear_layers = Sequential(
+            Linear(28*28*256, 500),
+            nn.RReLU(),
+            Linear(500, 250),
+            nn.RReLU(),
+            Linear(250, 2))
+
+    def forward(self, x):
+        x = self.cnn_layers(x)
+        x = x.view(x.size(0), -1)
+        x = self.drop_out(x)
+        x = self.linear_layers(x)
+        return x
+
+
+# defining the generic model
+model_generic_RRELU = generic_RRELU()
+# defining the optimizer
+optimizer = Adam(model_generic_RRELU.parameters())
+# defining the loss function
+loss_criterion = CrossEntropyLoss()
+# checking if GPU is available
+if torch.cuda.is_available():
+    model_generic_RRELU = model_generic_RRELU.cuda()
+    loss_criterion = loss_criterion.cuda()
+
+print(model_generic_RRELU)
+
+# train the model and save it
+trained_generic_RRELU_model, history_generic_RRELU = train_and_validate(
+    model_generic_RRELU, loss_criterion, optimizer, epochs=40)
+torch.save(history_generic_RRELU, dataset+'_generichistoryRELU.pt')
+
+# build the diagrams to demonstrate the relationship between training and validation sets
+
+# train loss and validation loss
+history_generic_RRELU = np.array(history_generic_RRELU)
+plt.plot(history_generic_RRELU[:, 0:2])
+plt.legend(['Tr Loss', 'Val Loss'])
+plt.xlabel('Epoch Number')
+plt.ylabel('Loss')
+plt.ylim(0, 1)
+plt.title('Loss Comparison For Generic Model with RRELU')
+plt.savefig(dataset+'_loss_curve_genericmodel_with RRELU.png')
+plt.show()
+
+
+# train accuracy and validation accuracy
+plt.plot(history_generic[:, 2:4])
+plt.legend(['Tr Accuracy', 'Val Accuracy'])
+plt.xlabel('Epoch Number')
+plt.ylabel('Accuracy')
+plt.ylim(0, 1)
+plt.title('Accuracy Comparison For Generic Model with RRELU')
+plt.savefig(dataset+'_accuracy_curve_genericmodel_with_RRELU.png')
+plt.show()
+
+# saved the best model and compute the accuracy
+bestgeneric_RRELU = torch.load(
+    'thecarconnectionpicturedataset2_modelgenericRRELU_25.pt')
+computeTestSetAccuracy(bestgeneric_RRELU, loss_criterion)
 

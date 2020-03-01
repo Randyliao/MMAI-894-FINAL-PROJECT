@@ -309,3 +309,78 @@ model_trained, history = train_model(
 # Save Model for Later Use
 torch.save(model_trained.state_dict(),
            'savedmodels/pytorch/ResNetTL-bmwVSaudi-v2.h5')
+#Training and Validation Loss and Accuracy by Epoch
+# Training loss verus validation loss
+plt.figure(figsize=(8, 6))
+plt.plot(history['train_loss'], label="Training Loss")
+plt.plot(history['val_loss'], label="Validation Loss")
+plt.legend()
+plt.xlabel('Epoch')
+plt.ylabel('Cross Entropy Loss')
+plt.title('Transfer Learning with ResNet50: Loss by Epoch')
+
+#Training accuracy 
+plt.figure(figsize=(8, 6))
+plt.plot(history['train_acc'], label="Training Accuracy")
+plt.plot(history['val_acc'], label="Validation Accuracy")
+plt.legend()
+plt.xlabel('Epoch')
+plt.ylabel('Average Accuracy')
+plt.title('Transfer Learning with ResNet50: Accuracy by Epoch')
+
+#Test the Trained Model
+def test_set_accuracy(model, loss_criterion, test_data_loader, test_data_size, device_type="cpu"):
+    '''
+    Function to compute the accuracy on the test set
+    Parameters
+        :param model: Model to test
+        :param loss_criterion: Loss Criterion to minimize
+    '''
+
+    device = torch.device("cpu")
+    if device_type == "cuda":
+        device = torch.device("cuda:0")
+
+    test_acc = 0.0
+    test_loss = 0.0
+
+    # Validation - No gradient tracking needed
+    with torch.no_grad():
+
+        # Set to evaluation mode
+        model.eval()
+
+        # Validation loop
+        for j, (inputs, labels) in enumerate(test_data_loader):
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+
+            # Forward pass - compute outputs on input data using the model
+            outputs = model(inputs)
+
+            # Compute loss
+            loss = loss_criterion(outputs, labels)
+
+            # Compute the total loss for the batch and add it to valid_loss
+            test_loss += loss.item() * inputs.size(0)
+
+            # Calculate validation accuracy
+            ret, predictions = torch.max(outputs.data, 1)
+            correct_counts = predictions.eq(labels.data.view_as(predictions))
+
+            # Convert correct_counts to float and then compute the mean
+            acc = torch.mean(correct_counts.type(torch.FloatTensor))
+
+            # Compute total accuracy in the whole batch and add to valid_acc
+            test_acc += acc.item() * inputs.size(0)
+
+            print("Test Batch number: {:03d}, Test: Loss: {:.4f}, Accuracy: {:.4f}".format(j, loss.item(), acc.item()))
+
+    # Find average test loss and test accuracy
+    avg_test_loss = test_loss/test_data_size 
+    avg_test_acc = test_acc/test_data_size
+
+    print("Test accuracy : " + str(avg_test_acc))
+
+model.load_state_dict(torch.load('checkpoint.pt'))
+test_set_accuracy(model, criterion, dataloaders['test'], len(image_datasets['test']))

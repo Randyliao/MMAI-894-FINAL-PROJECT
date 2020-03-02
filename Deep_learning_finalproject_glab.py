@@ -35,7 +35,7 @@ import math  # split calculate
 from google.colab import drive
 # Here you can update your directory on the google drive to where you unzip the files
 drive.mount('/content/drive')
-parent_dir = '/content/drive/My Drive/thecarconnectionpicturedataset2'
+parent_dir = '/content/drive/My Drive/thecarconnectionpicturedataset'
 # we have manually created two folders in the above directory to store all audi images in the Audi folder
 # and to store all bmw images in the BMW folder
 os.chdir(parent_dir)
@@ -236,7 +236,6 @@ def train_and_validate(model, loss_criterion, optimizer, epochs=20):
 
   return model, history
 
-# import time
 trained_model, history = train_and_validate(model_1, loss_criterion, optimizer, epochs=30)
 # create a saving point for the model
 torch.save(history, dataset+'_history.pt')

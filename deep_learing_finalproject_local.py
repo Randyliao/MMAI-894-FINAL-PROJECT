@@ -99,7 +99,6 @@ for i in range(num_to_process):
                     path_to_test_audi + "/" + audi_filename)
 
 # Transfer Learning for Recognizing BMW vs Audi images using ResNet
-%matplotlib inline
 
 # EarlyStopping Class adapted from https://github.com/Bjarten/early-stopping-pytorch
 # This class will be used in our main training and testing loop to break out of training early if necessary

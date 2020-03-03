@@ -93,7 +93,7 @@ def create_dataset():
 create_dataset()
 
 # after we have created the folders with train,valid, and test datasets
-%cd '/content/drive/My Drive/thecarconnectionpicturedataset2/train/1'
+cd '/content/drive/My Drive/thecarconnectionpicturedataset2/train/1'
 files = glob('*.jpg')
 files = np.random.permutation(files)
 train_img = []
@@ -133,13 +133,13 @@ from PIL import Image
 
 img = Image.fromarray(array)
 img.save('testrgb.png')
-%cd '/content/drive/My Drive/thecarconnectionpicturedataset2/train/11'
+cd '/content/drive/My Drive/thecarconnectionpicturedataset2/train/11'
 import PIL
 for i in range(len(pca_iam)):
   img = PIL.Image.fromarray(pca_iam[i])
   img.save(str(i)+'.png')
 
-%cd '/content/drive/My Drive/thecarconnectionpicturedataset
+cd '/content/drive/My Drive/thecarconnectionpicturedataset
 
 # Location of data
 dataset='thecarconnectionpicturedataset'
